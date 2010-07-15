@@ -105,11 +105,6 @@ namespace Hudson.TrayTracker.Utils.Collections
             throw new Exception("Required property '" + key + "' not found in file '" + id + "'");
         }
 
-        public void SetIntValue(string key, int value)
-        {
-            this[key] = value.ToString();
-        }
-
         public float? GetFloatValue(string key)
         {
             string strValue = GetStringValue(key);

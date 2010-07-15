@@ -55,6 +55,8 @@ namespace Hudson.TrayTracker.UI
                 ConfigurationService.ConfigurationUpdated -= configurationService_ConfigurationUpdated;
                 UpdateService.ProjectsUpdated -= updateService_ProjectsUpdated;
             };
+
+            UpdateNotifier();
         }
 
         void configurationService_ConfigurationUpdated()
@@ -322,10 +324,6 @@ namespace Hudson.TrayTracker.UI
         {
             Icon icon = icons[buildStatus];
             notifyIcon.Icon = icon;
-
-            // update the main window's icon
-            if (ConfigurationService.GeneralSettings.UpdateMainWindowIcon)
-                MainForm.Instance.UpdateIcon(icon);
         }
 
         private void LoadIcons()

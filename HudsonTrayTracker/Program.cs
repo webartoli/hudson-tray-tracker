@@ -46,7 +46,6 @@ namespace Hudson.TrayTracker
 
                 // Spring
                 ContextRegistry.GetContext();
-                TrayNotifier.Instance.UpdateNotifier();
 
                 ApplicationContext appContext = new ApplicationContext();
                 Application.Run(appContext);
@@ -74,7 +73,7 @@ namespace Hudson.TrayTracker
             }
             catch (Exception ex)
             {
-                logger.Error("Failed disposing tray notifier", ex);
+                logger.Error("Failed dispoing tray notifier", ex);
             }
 
             logger.Info(Assembly.GetExecutingAssembly().GetName().Name

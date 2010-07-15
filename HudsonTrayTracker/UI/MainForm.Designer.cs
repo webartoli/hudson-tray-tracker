@@ -49,11 +49,9 @@ namespace Hudson.TrayTracker.UI
             this.openConsolePageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runBuildMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.acknowledgeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.stopAcknowledgingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.acknowledgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopAcknowledgingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.claimBuildMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.removeProjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectsGridView = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.serverGridColumn = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -65,8 +63,6 @@ namespace Hudson.TrayTracker.UI
             this.lastSuccessUserGridColumn = new DevExpress.XtraGrid.Columns.GridColumn();
             this.lastFailureGridColumn = new DevExpress.XtraGrid.Columns.GridColumn();
             this.lastFailureUserGridColumn = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.claimedByGridColumn = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.claimReasonGridColumn = new DevExpress.XtraGrid.Columns.GridColumn();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.barManager)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectsGridControl)).BeginInit();
@@ -201,14 +197,12 @@ namespace Hudson.TrayTracker.UI
             this.openConsolePageMenuItem,
             this.runBuildMenuItem,
             this.toolStripSeparator1,
-            this.acknowledgeMenuItem,
-            this.stopAcknowledgingMenuItem,
+            this.acknowledgeToolStripMenuItem,
+            this.stopAcknowledgingToolStripMenuItem,
             this.toolStripSeparator2,
-            this.claimBuildMenuItem,
-            this.toolStripSeparator3,
             this.removeProjectMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(225, 198);
+            this.contextMenuStrip.Size = new System.Drawing.Size(225, 148);
             this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
             // 
             // openProjectPageMenuItem
@@ -239,37 +233,24 @@ namespace Hudson.TrayTracker.UI
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(221, 6);
             // 
-            // acknowledgeMenuItem
+            // acknowledgeToolStripMenuItem
             // 
-            this.acknowledgeMenuItem.Name = "acknowledgeMenuItem";
-            this.acknowledgeMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.acknowledgeMenuItem.Text = "Acknowledge (tray icon only)";
-            this.acknowledgeMenuItem.Click += new System.EventHandler(this.acknowledgeMenuItem_Click);
+            this.acknowledgeToolStripMenuItem.Name = "acknowledgeToolStripMenuItem";
+            this.acknowledgeToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.acknowledgeToolStripMenuItem.Text = "Acknowledge (tray icon only)";
+            this.acknowledgeToolStripMenuItem.Click += new System.EventHandler(this.acknowledgeToolStripMenuItem_Click);
             // 
-            // stopAcknowledgingMenuItem
+            // stopAcknowledgingToolStripMenuItem
             // 
-            this.stopAcknowledgingMenuItem.Name = "stopAcknowledgingMenuItem";
-            this.stopAcknowledgingMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.stopAcknowledgingMenuItem.Text = "Stop acknowledging";
-            this.stopAcknowledgingMenuItem.Click += new System.EventHandler(this.stopAcknowledgingMenuItem_Click);
+            this.stopAcknowledgingToolStripMenuItem.Name = "stopAcknowledgingToolStripMenuItem";
+            this.stopAcknowledgingToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.stopAcknowledgingToolStripMenuItem.Text = "Stop acknowledging";
+            this.stopAcknowledgingToolStripMenuItem.Click += new System.EventHandler(this.stopAcknowledgingToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(221, 6);
-            // 
-            // claimBuildMenuItem
-            // 
-            this.claimBuildMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("claimBuildMenuItem.Image")));
-            this.claimBuildMenuItem.Name = "claimBuildMenuItem";
-            this.claimBuildMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.claimBuildMenuItem.Text = "Claim this build";
-            this.claimBuildMenuItem.Click += new System.EventHandler(this.claimBuildMenuItem_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(221, 6);
             // 
             // removeProjectMenuItem
             // 
@@ -289,9 +270,7 @@ namespace Hudson.TrayTracker.UI
             this.lastSuccessGridColumn,
             this.lastSuccessUserGridColumn,
             this.lastFailureGridColumn,
-            this.lastFailureUserGridColumn,
-            this.claimedByGridColumn,
-            this.claimReasonGridColumn});
+            this.lastFailureUserGridColumn});
             this.projectsGridView.GridControl = this.projectsGridControl;
             this.projectsGridView.GroupCount = 1;
             this.projectsGridView.Name = "projectsGridView";
@@ -400,20 +379,6 @@ namespace Hudson.TrayTracker.UI
             this.lastFailureUserGridColumn.Visible = true;
             this.lastFailureUserGridColumn.VisibleIndex = 6;
             // 
-            // claimedByGridColumn
-            // 
-            this.claimedByGridColumn.Caption = "Claimed by";
-            this.claimedByGridColumn.FieldName = "ClaimedBy";
-            this.claimedByGridColumn.Name = "claimedByGridColumn";
-            this.claimedByGridColumn.OptionsColumn.AllowEdit = false;
-            // 
-            // claimReasonGridColumn
-            // 
-            this.claimReasonGridColumn.Caption = "Claim reason";
-            this.claimReasonGridColumn.FieldName = "ClaimReason";
-            this.claimReasonGridColumn.Name = "claimReasonGridColumn";
-            this.claimReasonGridColumn.OptionsColumn.AllowEdit = false;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -467,17 +432,13 @@ namespace Hudson.TrayTracker.UI
         private System.Windows.Forms.ToolStripMenuItem openProjectPageMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runBuildMenuItem;
         private DevExpress.XtraBars.BarButtonItem checkUpdatesButtonItem;
-        private System.Windows.Forms.ToolStripMenuItem acknowledgeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem acknowledgeToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem stopAcknowledgingMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stopAcknowledgingToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem removeProjectMenuItem;
         private DevExpress.XtraGrid.Columns.GridColumn lastSuccessUserGridColumn;
         private DevExpress.XtraGrid.Columns.GridColumn lastFailureUserGridColumn;
         private System.Windows.Forms.ToolStripMenuItem openConsolePageMenuItem;
-        private DevExpress.XtraGrid.Columns.GridColumn claimedByGridColumn;
-        private DevExpress.XtraGrid.Columns.GridColumn claimReasonGridColumn;
-        private System.Windows.Forms.ToolStripMenuItem claimBuildMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }

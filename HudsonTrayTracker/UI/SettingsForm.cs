@@ -46,20 +46,5 @@ namespace Hudson.TrayTracker.UI
             base.OnShown(e);
             tabControl.SelectedTabPageIndex = 0;
         }
-
-        private void SettingsForm_Load(object sender, EventArgs e)
-        {
-            refreshSpinEdit.Value = ConfigurationService.GeneralSettings.RefreshIntervalInSeconds;
-            updateMainWindowIconCheckEdit.Checked = ConfigurationService.GeneralSettings.UpdateMainWindowIcon;
-            integrateWithClaimPluginCheckEdit.Checked = ConfigurationService.GeneralSettings.IntegrateWithClaimPlugin;
-        }
-
-        private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            int refreshInterval = (int)refreshSpinEdit.Value;
-            ConfigurationService.SetRefreshIntervalInSeconds(refreshInterval);
-            ConfigurationService.SetUpdateMainWindowIcon(updateMainWindowIconCheckEdit.Checked);
-            ConfigurationService.SetIntegrateWithClaimPlugin(integrateWithClaimPluginCheckEdit.Checked);
-        }
     }
 }

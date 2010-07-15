@@ -38,7 +38,7 @@ namespace Hudson.TrayTracker.Utils
                 return;
             }
             logger.Info("Update accepted by user");
-            UIUtils.OpenWebPage(installerUrl, logger);
+            Process.Start(installerUrl);
             Application.Exit();
         }
     }

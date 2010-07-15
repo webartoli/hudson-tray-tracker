@@ -17,16 +17,13 @@ namespace Hudson.TrayTracker.BusinessComponents
 
         static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        const string HUDSON_TRAY_TRACKER_DIRECTORY = "Hudson Tray Tracker";
-        const string PROPERTIES_FILE = "hudson.properties";
-        // 15 seconds
-        const int DEFAULT_TIME_BETWEEN_UPDATES = 15;
+        private const string HUDSON_TRAY_TRACKER_DIRECTORY = "Hudson Tray Tracker";
+        private const string PROPERTIES_FILE = "hudson.properties";
 
         PropertiesFile propertiesFile;
 
         public ISet<Server> Servers { get; private set; }
         public NotificationSettings NotificationSettings { get; set; }
-        public GeneralSettings GeneralSettings { get; set; }
 
         public void Initialize()
         {
@@ -88,14 +85,6 @@ namespace Hudson.TrayTracker.BusinessComponents
             }
 
             LoadNotificationSettings();
-            LoadGeneralSettings();
-        }
-
-        private void LoadGeneralSettings()
-        {
-            GeneralSettings.RefreshIntervalInSeconds = propertiesFile.GetIntValue("general.RefreshTimeInSeconds", DEFAULT_TIME_BETWEEN_UPDATES);
-            GeneralSettings.UpdateMainWindowIcon = propertiesFile.GetBoolValue("general.UpdateMainWindowIcon", true);
-            GeneralSettings.IntegrateWithClaimPlugin = propertiesFile.GetBoolValue("general.IntegrateWithClaimPlugin", true);
         }
 
         private void LoadNotificationSettings()
@@ -147,19 +136,11 @@ namespace Hudson.TrayTracker.BusinessComponents
                 propertiesFile.SetGroupCount("projects", projectId);
 
             SaveNotificationSettings();
-            SaveGeneralSettings();
 
             propertiesFile.WriteProperties();
 
             if (ConfigurationUpdated != null)
                 ConfigurationUpdated();
-        }
-
-        private void SaveGeneralSettings()
-        {
-            propertiesFile.SetIntValue("general.RefreshTimeInSeconds", GeneralSettings.RefreshIntervalInSeconds);
-            propertiesFile.SetBoolValue("general.UpdateMainWindowIcon", GeneralSettings.UpdateMainWindowIcon);
-            propertiesFile.SetBoolValue("general.IntegrateWithClaimPlugin", GeneralSettings.IntegrateWithClaimPlugin);
         }
 
         private void SaveNotificationSettings()
@@ -278,24 +259,6 @@ namespace Hudson.TrayTracker.BusinessComponents
         public void SetTreadUnstableAsFailed(bool value)
         {
             NotificationSettings.TreatUnstableAsFailed = value;
-            SaveConfiguration();
-        }
-
-        public void SetRefreshIntervalInSeconds(int value)
-        {
-            GeneralSettings.RefreshIntervalInSeconds = value;
-            SaveConfiguration();
-        }
-
-        public void SetUpdateMainWindowIcon(bool value)
-        {
-            GeneralSettings.UpdateMainWindowIcon = value;
-            SaveConfiguration();
-        }
-
-        public void SetIntegrateWithClaimPlugin(bool value)
-        {
-            GeneralSettings.IntegrateWithClaimPlugin = value;
             SaveConfiguration();
         }
     }

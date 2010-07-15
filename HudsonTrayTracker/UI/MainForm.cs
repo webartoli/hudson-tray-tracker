@@ -71,17 +71,13 @@ namespace Hudson.TrayTracker.UI
         {
             base.OnLoad(e);
             Initialize();
-            UpdateClaimPluginIntegration();
             LoadIcons();
             LoadProjects();
         }
 
         void configurationService_ConfigurationUpdated()
         {
-            UpdateClaimPluginIntegration();
             LoadProjects();
-            if (ConfigurationService.GeneralSettings.UpdateMainWindowIcon == false)
-                ResetIcon();
         }
 
         private delegate void ProjectsUpdatedDelegate();
@@ -254,7 +250,7 @@ namespace Hudson.TrayTracker.UI
         {
             if (project == null)
                 return;
-            UIUtils.OpenWebPage(project.Url, logger);
+            Process.Start(project.Url);
         }
 
         private void OpenSelectedProjectConsolePage()
@@ -268,7 +264,7 @@ namespace Hudson.TrayTracker.UI
             if (project == null)
                 return;
             string url = HudsonService.GetConsolePage(project);
-            UIUtils.OpenWebPage(url, logger);
+            Process.Start(url);
         }
 
         private class ProjectWrapper
@@ -315,28 +311,6 @@ namespace Hudson.TrayTracker.UI
             public string LastFailureUsers
             {
                 get { return FormatUsers(Project.LastFailedBuild); }
-            }
-            public string ClaimedBy
-            {
-                get
-                {
-                    // get a copy of the reference to avoid a race condition
-                    var lastFailedBuild = Project.LastFailedBuild;
-                    if (lastFailedBuild == null || lastFailedBuild.ClaimDetails == null)
-                        return "";
-                    return Project.LastFailedBuild.ClaimDetails.User;
-                }
-            }
-            public string ClaimReason
-            {
-                get
-                {
-                    // get a copy of the reference to avoid a race condition
-                    var lastFailedBuild = Project.LastFailedBuild;
-                    if (lastFailedBuild == null || lastFailedBuild.ClaimDetails == null)
-                        return "";
-                    return Project.LastFailedBuild.ClaimDetails.Reason;
-                }
             }
 
             private string FormatBuildDetails(BuildDetails details)
@@ -427,7 +401,7 @@ namespace Hudson.TrayTracker.UI
             }
         }
 
-        private void acknowledgeMenuItem_Click(object sender, EventArgs e)
+        private void acknowledgeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Project project = GetSelectedProject();
             if (project == null)
@@ -438,7 +412,7 @@ namespace Hudson.TrayTracker.UI
             TrayNotifier.Instance.AcknowledgeStatus(project, currentStatus);
         }
 
-        private void stopAcknowledgingMenuItem_Click(object sender, EventArgs e)
+        private void stopAcknowledgingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Project project = GetSelectedProject();
             if (project == null)
@@ -456,15 +430,14 @@ namespace Hudson.TrayTracker.UI
                 openProjectPageMenuItem.Enabled
                     = openConsolePageMenuItem.Enabled
                     = runBuildMenuItem.Enabled
-                    = acknowledgeMenuItem.Enabled
-                    = stopAcknowledgingMenuItem.Enabled
-                    = claimBuildMenuItem.Enabled
+                    = acknowledgeToolStripMenuItem.Enabled
+                    = stopAcknowledgingToolStripMenuItem.Enabled
                     = false;
                 return;
             }
 
-            acknowledgeMenuItem.Enabled = project.Status >= BuildStatus.Indeterminate;
-            stopAcknowledgingMenuItem.Enabled = TrayNotifier.Instance.IsAcknowledged(project);
+            acknowledgeToolStripMenuItem.Enabled = project.Status >= BuildStatus.Indeterminate;
+            stopAcknowledgingToolStripMenuItem.Enabled = TrayNotifier.Instance.IsAcknowledged(project);
 
             bool shouldOpenConsolePage = ShouldOpenConsolePage(project);
             if (shouldOpenConsolePage)
@@ -477,14 +450,6 @@ namespace Hudson.TrayTracker.UI
                 openConsolePageMenuItem.Font = normalMenuItemFont;
                 openProjectPageMenuItem.Font = mainMenuItemFont;
             }
-
-            // Claim
-            claimBuildMenuItem.Visible
-                = toolStripSeparator2.Visible
-                = ConfigurationService.GeneralSettings.IntegrateWithClaimPlugin;
-            claimBuildMenuItem.Enabled
-                = toolStripSeparator2.Enabled
-                = ConfigurationService.GeneralSettings.IntegrateWithClaimPlugin && project.LastFailedBuild != null;
         }
 
         private void removeProjectMenuItem_Click(object sender, EventArgs e)
@@ -493,23 +458,6 @@ namespace Hudson.TrayTracker.UI
             if (project == null)
                 return;
             ConfigurationService.RemoveProject(project);
-        }
-
-        private void claimBuildMenuItem_Click(object sender, EventArgs e)
-        {
-            Project project = GetSelectedProject();
-            if (project == null)
-                return;
-            BuildDetails lastFailedBuild = project.LastFailedBuild;
-            if (lastFailedBuild == null)
-                return;
-
-            var form = new ClaimBuildForm();
-            form.Initialize(project, lastFailedBuild);
-
-            var res = form.ShowDialog();
-            if (res != DialogResult.OK)
-                return;
         }
 
         private void projectsGridView_CustomColumnSort(object sender, CustomColumnSortEventArgs e)
@@ -557,52 +505,6 @@ namespace Hudson.TrayTracker.UI
         {
             if (e.KeyCode == Keys.F5)
                 ProjectsUpdateService.UpdateProjects();
-        }
-
-        private delegate void UpdateIconDelegate(Icon icon);
-        public void UpdateIcon(Icon icon)
-        {
-            if (ConfigurationService.GeneralSettings.UpdateMainWindowIcon == false)
-                return;
-
-            if (InvokeRequired)
-            {
-                Delegate del = new UpdateIconDelegate(UpdateIcon);
-                MainForm.Instance.BeginInvoke(del, icon);
-                return;
-            }
-
-            this.Icon = icon;
-        }
-
-        private void ResetIcon()
-        {
-            // copied from the designer code
-            ComponentResourceManager resources = new ComponentResourceManager(typeof(MainForm));
-            this.Icon = ((Icon)(resources.GetObject("$this.Icon")));
-        }
-
-        private void UpdateClaimPluginIntegration()
-        {
-            bool integrate = ConfigurationService.GeneralSettings.IntegrateWithClaimPlugin;
-            if (integrate)
-            {
-                if (claimedByGridColumn.VisibleIndex == -1)
-                {
-                    claimedByGridColumn.Visible = true;
-                    claimedByGridColumn.VisibleIndex = projectsGridView.Columns.Count - 2;
-                }
-                if (claimReasonGridColumn.VisibleIndex == -1)
-                {
-                    claimReasonGridColumn.Visible = true;
-                    claimReasonGridColumn.VisibleIndex = 8;
-                }
-            }
-            else
-            {
-                claimedByGridColumn.Visible = false;
-                claimReasonGridColumn.Visible = false;
-            }
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Hudson.TrayTracker.BusinessComponents
 {
     public class NotificationService : Component
     {
-        private AllServersStatus allServersStatus = new AllServersStatus();
+        private AllServersStatus allServersStatus;
 
         public ConfigurationService ConfigurationService { get; set; }
         public ProjectsUpdateService UpdateService { private get; set; }
@@ -21,7 +21,7 @@ namespace Hudson.TrayTracker.BusinessComponents
                 ConfigurationService.ConfigurationUpdated -= Execute;
                 UpdateService.ProjectsUpdated -= Execute;
             };
-
+            allServersStatus = new AllServersStatus();
             Execute();
         }
 

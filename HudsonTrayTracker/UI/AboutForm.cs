@@ -8,15 +8,11 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Reflection;
 using Spring.Context.Support;
-using Hudson.TrayTracker.Utils;
-using Common.Logging;
 
 namespace Hudson.TrayTracker.UI
 {
     public partial class AboutForm : DevExpress.XtraEditors.XtraForm
     {
-        static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         public static AboutForm Instance
         {
             get
@@ -37,7 +33,7 @@ namespace Hudson.TrayTracker.UI
         private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             string url = ((LinkLabel)sender).Text;
-            UIUtils.OpenWebPage(url, logger);
+            Process.Start(url);
         }
 
         public static void ShowDialogOrFocus()

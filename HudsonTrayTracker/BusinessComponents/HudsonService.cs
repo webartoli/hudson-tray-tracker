@@ -26,11 +26,9 @@ namespace Hudson.TrayTracker.BusinessComponents
         // URLs visited between 2 calls to RecycleCache()
         ISet<string> visitedURLs = new HashedSet<string>();
 
-        public ClaimService ClaimService { get; set; }
-
         public IList<Project> LoadProjects(Server server)
         {
-            String url = NetUtils.ConcatUrls(server.Url, "/api/xml");
+            String url = server.Url + "/api/xml";
 
             logger.Info("Loading projects from " + url);
 
@@ -67,7 +65,7 @@ namespace Hudson.TrayTracker.BusinessComponents
 
         public AllBuildDetails UpdateProject(Project project)
         {
-            String url = NetUtils.ConcatUrls(project.Url, "/api/xml");
+            String url = project.Url + "/api/xml";
 
             logger.Info("Updating project from " + url);
 
@@ -126,7 +124,7 @@ namespace Hudson.TrayTracker.BusinessComponents
             if (buildUrl == null)
                 return null;
 
-            String url = NetUtils.ConcatUrls(buildUrl, "/api/xml");
+            String url = buildUrl + "/api/xml";
 
             if (logger.IsDebugEnabled)
                 logger.Debug("Getting build details from " + url);
@@ -141,7 +139,7 @@ namespace Hudson.TrayTracker.BusinessComponents
 
             string number = xml.SelectSingleNode("/*/number").InnerText;
             string timestamp = xml.SelectSingleNode("/*/timestamp").InnerText;
-            XmlNodeList userNodes = xml.SelectNodes("/*/culprit/fullName");
+            XmlNodeList userNodes = xml.SelectNodes("/*/changeSet/item/user");
 
             TimeSpan ts = TimeSpan.FromSeconds(long.Parse(timestamp) / 1000);
             DateTime date = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -149,17 +147,12 @@ namespace Hudson.TrayTracker.BusinessComponents
 
             ISet<string> users = new HashedSet<string>();
             foreach (XmlNode userNode in userNodes)
-            {
-                string userName = CleanUserName(userNode.InnerText);
-                users.Add(userName);
-            }
+                users.Add(userNode.InnerText);
 
             BuildDetails res = new BuildDetails();
             res.Number = int.Parse(number);
             res.Time = date;
             res.Users = users;
-
-            ClaimService.FillInBuildDetails(res, xml);
 
             if (logger.IsDebugEnabled)
                 logger.Debug("Done getting build details");
@@ -181,7 +174,7 @@ namespace Hudson.TrayTracker.BusinessComponents
 
         public void RunBuild(Project project)
         {
-            String url = NetUtils.ConcatUrls(project.Url, "/build?delay=0sec");
+            String url = project.Url + "/build?delay=0sec";
 
             logger.Info("Running build at " + url);
 
@@ -286,14 +279,6 @@ namespace Hudson.TrayTracker.BusinessComponents
             }
         }
 
-        public void RemoveFromCache(string url)
-        {
-            lock (this)
-            {
-                cache.Remove(url);
-            }
-        }
-
         public string GetConsolePage(Project project)
         {
             string res = project.Url;
@@ -314,20 +299,6 @@ namespace Hudson.TrayTracker.BusinessComponents
             // if there is a build in progress, there is a build
             bool buildInProgress = BuildStatusUtils.IsBuildInProgress(allBuildDetails.Status);
             return buildInProgress;
-        }
-
-        private string CleanUserName(string fullName)
-        {
-            char[] filterArray = { '<', '(', '-' };
-            int bracketIndex = fullName.IndexOfAny(filterArray);
-
-            String name;
-            if (bracketIndex > 0)
-                name = fullName.Substring(0, bracketIndex);
-            else
-                name = fullName;
-
-            return name.Trim();
         }
     }
 }
